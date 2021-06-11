@@ -1,0 +1,125 @@
+package gui;
+
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
+import entidad.Cliente;
+import model.ClienteModel;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JRViewer;
+import reporte.GeneradorReporte;
+
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import javax.swing.JTextField;
+import java.awt.Font;
+import javax.swing.JButton;
+import java.awt.Color;
+import java.awt.event.ActionListener;
+import java.util.List;
+import java.awt.event.ActionEvent;
+
+@SuppressWarnings("serial")
+public class FrmReporteClienteConsulta extends JFrame implements ActionListener {
+
+	private JPanel contentPane;
+	private JTextField txtDNI;
+	private JButton btnFiltrar;
+	private JPanel panelReporte;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					FrmReporteClienteConsulta frame = new FrmReporteClienteConsulta();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public FrmReporteClienteConsulta() {
+		setBackground(Color.LIGHT_GRAY);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 821, 592);
+		contentPane = new JPanel();
+		contentPane.setBackground(Color.DARK_GRAY);
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		JLabel lblConsultaCliente = new JLabel("CONSULTA DE CLIENTE POR DNI");
+		lblConsultaCliente.setForeground(Color.WHITE);
+		lblConsultaCliente.setFont(new Font("Trebuchet MS", Font.BOLD, 23));
+		lblConsultaCliente.setHorizontalAlignment(SwingConstants.CENTER);
+		lblConsultaCliente.setBounds(10, 11, 785, 34);
+		contentPane.add(lblConsultaCliente);
+		
+		JLabel lblDni = new JLabel("DNI\t        :");
+		lblDni.setForeground(Color.WHITE);
+		lblDni.setFont(new Font("Trebuchet MS", Font.BOLD, 14));
+		lblDni.setBounds(123, 68, 71, 14);
+		contentPane.add(lblDni);
+		
+		txtDNI = new JTextField();
+		txtDNI.setBounds(214, 66, 317, 20);
+		contentPane.add(txtDNI);
+		txtDNI.setColumns(10);
+		
+		btnFiltrar = new JButton("FILTRAR");
+		btnFiltrar.addActionListener(this);
+		btnFiltrar.setBackground(Color.DARK_GRAY);
+		btnFiltrar.setForeground(Color.WHITE);
+		btnFiltrar.setFont(new Font("Trebuchet MS", Font.BOLD, 14));
+		btnFiltrar.setBounds(597, 62, 150, 26);
+		contentPane.add(btnFiltrar);
+		
+		JPanel panelReporte = new JPanel();
+		panelReporte.setBounds(10, 99, 785, 443);
+		contentPane.add(panelReporte);
+	}
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btnFiltrar) {
+			actionPerformedBtnFiltrarJButton(e);
+		}
+	}
+	protected void actionPerformedBtnFiltrarJButton(ActionEvent e) {
+		String numero = txtDNI.getText().trim();
+		
+		ClienteModel cm = new ClienteModel();
+		List<Cliente> lstData = null;
+		if(numero.equals("")) {
+			lstData = cm.listaCliente();
+		}else {
+			lstData = cm.consultaCliente(numero);
+			
+		JRBeanCollectionDataSource dataSource 
+			= new JRBeanCollectionDataSource(lstData);
+		
+		String file = "reporteCliente.jasper";
+		
+		JasperPrint jasperPrint =
+			GeneradorReporte.genera(file, dataSource, null);
+		
+		JRViewer jRViewer = new JRViewer(jasperPrint);
+		
+		panelReporte.removeAll();
+		panelReporte.add(jRViewer);
+		panelReporte.repaint();
+		panelReporte.revalidate();
+		}
+	}
+}

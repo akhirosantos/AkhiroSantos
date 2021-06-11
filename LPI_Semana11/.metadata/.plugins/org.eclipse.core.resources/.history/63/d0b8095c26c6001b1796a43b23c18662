@@ -1,0 +1,7 @@
+package entidad;
+
+public class TipoCliente {
+	public int idTipoCliente;
+	public String nombre;
+
+}

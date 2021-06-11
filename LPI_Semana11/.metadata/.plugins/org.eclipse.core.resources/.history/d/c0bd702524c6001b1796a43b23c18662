@@ -1,0 +1,12 @@
+package entidad;
+
+import java.util.Date;
+
+public class Cliente {
+	private int idCliente;
+	private String nombres;
+	private String apellidos;
+	private Date fechaNacimiento;
+	private int idTipoCliente;
+
+}

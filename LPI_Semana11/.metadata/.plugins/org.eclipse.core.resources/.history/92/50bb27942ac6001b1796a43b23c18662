@@ -1,0 +1,122 @@
+package gui;
+
+import java.awt.Color;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.SystemColor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+
+import entidad.Cliente;
+import model.ClienteModel;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JRViewer;
+import reporte.GeneradorReporte;
+
+public class FrmReporteClienteConsultaNombre extends JFrame {
+
+	private JPanel contentPane;
+	private JLabel lblConsultaCliente;
+	private JTextField txtNombre;
+	private JButton btnFiltrar;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					FrmReporteClienteConsultaNombre frame = new FrmReporteClienteConsultaNombre();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public FrmReporteClienteConsultaNombre() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 965, 700);
+		contentPane = new JPanel();
+		contentPane.setBackground(SystemColor.activeCaption);
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+
+		lblConsultaCliente = new JLabel("CONSULTA DE CLIENTES POR NOMBRE");
+		lblConsultaCliente.setFont(new Font("Tahoma", Font.BOLD, 19));
+		lblConsultaCliente.setForeground(Color.BLACK);
+		lblConsultaCliente.setHorizontalAlignment(SwingConstants.CENTER);
+		lblConsultaCliente.setBounds(32, 11, 906, 40);
+		contentPane.add(lblConsultaCliente);
+		
+		JPanel panel = new JPanel();
+		panel.setBackground(SystemColor.inactiveCaptionBorder);
+		panel.setBorder(new TitledBorder(null, "Consultas", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel.setBounds(32, 46, 896, 70);
+		contentPane.add(panel);
+		panel.setLayout(null);
+		
+		JLabel lblNombres = new JLabel("Nombres:");
+		lblNombres.setFont(new Font("Tahoma", Font.BOLD, 17));
+		lblNombres.setBounds(45, 23, 96, 36);
+		panel.add(lblNombres);
+		
+		txtNombre = new JTextField();
+		txtNombre.setBounds(148, 34, 229, 20);
+		panel.add(txtNombre);
+		txtNombre.setColumns(10);
+		
+		btnFiltrar = new JButton("Filtrar");
+		btnFiltrar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				do_btnFiltrar_actionPerformed(e);
+			}
+		});
+		btnFiltrar.setForeground(SystemColor.text);
+		btnFiltrar.setFont(new Font("Tahoma", Font.BOLD, 14));
+		btnFiltrar.setBackground(SystemColor.controlText);
+		btnFiltrar.setBounds(513, 33, 89, 23);
+		panel.add(btnFiltrar);
+			
+	}
+	
+	protected void do_btnFiltrar_actionPerformed(ActionEvent e) {
+		ClienteModel model = new ClienteModel();
+		List<Cliente> data = model.consultaNombreCliente(String nombres);
+
+		// 1 La data
+		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(data);
+
+		// 2 El diseño del reporte
+		String file = "reporteClub.jasper";
+
+		// 3 Se genera el reporte
+		JasperPrint jasperPrint = GeneradorReporte.genera(file, dataSource, null);
+
+		// 4 Se muestra en el visor
+		JRViewer jRViewer = new JRViewer(jasperPrint);
+
+		// 5 Se añade el visor al panel
+		panelReporte.removeAll();
+		panelReporte.add(jRViewer);
+		panelReporte.repaint();
+		panelReporte.revalidate();
+	}
+}
